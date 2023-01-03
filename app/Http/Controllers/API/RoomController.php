@@ -3,10 +3,17 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\RoomResource;
+use App\Models\Room;
+use App\Traits\ResponseApi;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class RoomController extends Controller
 {
+    use ResponseApi;
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +21,15 @@ class RoomController extends Controller
      */
     public function index()
     {
-        //
+        try {
+
+            $rooms = Room::chatRooms()->get();
+            
+            return $this->success('retrivied room chats', RoomResource::collection($rooms));
+
+        } catch (Exception $e) {
+            $this->error($e->getMessage());
+        }
     }
 
     /**
@@ -35,7 +50,29 @@ class RoomController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+
+            $data = Validator::make($request->all(), [
+                'receiver' => [
+                    'required',
+                    Rule::unique('rooms')->where(fn ($query) => $query->where('sender', auth()->user()->id)->where('receiver', $request->receiver))
+                ]
+            ]);
+
+            if($data->fails()) {
+                return $this->error($data->errors(), 400);
+            }
+
+            $rooms = Room::create([
+                'sender' => auth()->user()->id,
+                'receiver' => $request->receiver     
+            ]);
+
+            return $this->success('create room successfully', new RoomResource($rooms));
+
+        } catch (Exception $e) {
+            return $this->error($e->getMessage());
+        }
     }
 
     /**
