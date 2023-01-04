@@ -3,10 +3,15 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
+use App\Models\User;
+use App\Traits\ResponseApi;
+use Exception;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+    use ResponseApi;
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +19,14 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        try {
+
+            $users = User::where('id', '!=', auth()->user()->id)->get();
+            return $this->success('get users', UserResource::collection($users));
+
+        } catch (Exception $e) {
+            return $this->error($e->getMessage());
+        }
     }
 
     /**
