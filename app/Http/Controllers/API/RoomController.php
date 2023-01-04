@@ -68,7 +68,7 @@ class RoomController extends Controller
                 'receiver' => $request->receiver     
             ]);
 
-            return $this->success('create room successfully', new RoomResource($rooms));
+            return $this->success('create room successfully', new RoomResource($rooms), 201);
 
         } catch (Exception $e) {
             return $this->error($e->getMessage());
@@ -117,6 +117,18 @@ class RoomController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+
+            $rooms = Room::find($id);
+            if(!$rooms) {
+                return $this->error('room chats not found', 404);
+            }
+
+            $rooms->delete();
+            return $this->success('room deleted succesfully', []);
+
+        } catch(Exception $e) {
+            return $this->error($e->getMessage());
+        }
     }
 }
