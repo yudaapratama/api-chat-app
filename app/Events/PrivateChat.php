@@ -16,16 +16,18 @@ class PrivateChat implements ShouldBroadcast
 
     public $content;
     public $room;
+    public $type;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($content, $room)
+    public function __construct($content, $room, $type = 1)
     {
         $this->content = $content;
         $this->room = $room;
+        $this->type = $type;
         $this->dontBroadcastToCurrentUser();
     }
 
