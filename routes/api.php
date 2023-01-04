@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\RoomController;
 use App\Http\Controllers\API\ChatController;
+use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::get('chat/{room}', [ChatController::class, 'index']);
     Route::post('chat/{room}', [ChatController::class, 'store']);
+
+    Route::resource('user', UserController::class)->only(['index']);
 
 });
 
