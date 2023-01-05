@@ -64,6 +64,10 @@ class ChatController extends Controller
                 'message' => 'required'
             ]);
 
+            if($data->fails()) {
+                return $this->error($data->errors(), 400);
+            }
+
             DB::transaction(function () use ($request, $room) {
 
                 $message = Message::create([
